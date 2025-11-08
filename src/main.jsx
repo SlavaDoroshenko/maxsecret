@@ -4,11 +4,14 @@ import "@maxhub/max-ui/dist/styles.css";
 import App from "./App.jsx";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
+import { TabProvider } from "./contexts/TabContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
-    <MaxUI colorScheme="light" platform="ios">
-      <App />
-    </MaxUI>
+    <TabProvider>
+      <MaxUI colorScheme="light" platform="ios">
+        <App />
+      </MaxUI>
+    </TabProvider>
   </BrowserRouter>
 );
