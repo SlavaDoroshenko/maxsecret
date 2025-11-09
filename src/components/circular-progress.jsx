@@ -31,7 +31,7 @@ export default function CircularProgress({
           cy="50"
           r={radius}
           fill="none"
-          stroke="#3B82F6"
+          stroke="#EFFCFF"
           strokeWidth="8"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}

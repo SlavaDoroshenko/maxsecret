@@ -9,25 +9,50 @@ import {
 } from "@maxhub/max-ui";
 import TabBar from "../components/tabs";
 import CircularProgress from "../components/circular-progress";
-import { currentNorm, dailyNorm } from "../mocks/variables";
+import { currentNorm, dailyNorm, dailyRemain } from "../mocks/variables";
+import ArrowRight from "../assets/arrow-right.svg";
+import StatisticIcon from "../assets/statistic.svg";
+import NormStatic from "../components/norm-static";
 
 const Main = () => (
   <Panel mode="secondary">
     <Grid gap={12} cols={1}>
-      <Container className="p-4">
+      <Container className="p-4 bg-[#111c27]">
         <Flex direction="column" align="center">
-          <Avatar.Container size={72} form="circle">
-            <Avatar.Image src="https://sun9-21.userapi.com/1N-rJz6-7hoTDW7MhpWe19e_R_TdGV6Wu5ZC0A/67o6-apnAks.jpg" />
-          </Avatar.Container>
-          <Typography.Title>Иван Иванов</Typography.Title>
-          <div className="p-4">
-            <h2>Сегодня</h2>
+          <Typography.Headline variant="large-strong">
+            Дневник
+          </Typography.Headline>
+
+          <Flex direction="row" align="center" gap={72}>
+            <Button mode="link">
+              <img
+                src={ArrowRight}
+                alt="Предыдущий день"
+                className="w-4 h-4 rotate-180 "
+              />
+            </Button>
+
+            <Typography.Title>Четверг, 09 ноября</Typography.Title>
+
+            <Button mode="link">
+              <img src={ArrowRight} alt="Предыдущий день" className="w-4 h-4" />
+            </Button>
+          </Flex>
+          <Flex
+            direction="row"
+            align="center"
+            display="inline-flex"
+            justify="between"
+            className="w-full justify-between pl-20 pr-20"
+          >
+            <NormStatic value={dailyNorm} label="норма" />
             <CircularProgress
               value={currentNorm}
               max={dailyNorm}
               label="ккал"
             />
-          </div>
+            <NormStatic value={dailyRemain} label="осталось" />
+          </Flex>
         </Flex>
       </Container>
     </Grid>

@@ -15,7 +15,7 @@ export default function TabBar() {
   const { activeTab, setActiveTab } = useTab();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10 p-4">
       <div className="flex justify-around items-center h-14 px-2">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
