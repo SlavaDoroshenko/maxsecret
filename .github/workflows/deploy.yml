@@ -50,5 +50,5 @@ jobs:
             echo "Pulling new image..."
             docker pull ghcr.io/${{ env.IMAGE_NAME }}:latest
             echo "Running new container..."
-            docker run -d --name web -p 80:80 --restart unless-stopped ghcr.io/${{ env.IMAGE_NAME }}:latest
+            docker run -d --name web -p 8080:80 --restart unless-stopped ghcr.io/${{ env.IMAGE_NAME }}:latest
             echo "Deployment complete!"
