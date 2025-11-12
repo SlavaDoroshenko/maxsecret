@@ -33,9 +33,6 @@ export default function BarcodeScannerPage() {
               // - отправить barcode на бэкенд
               // - сохранить в localStorage
               // - перейти на страницу продукта и т.д.
-              webApp.openLink(
-                `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`
-              );
               console.log("Найден штрих-код:", barcode);
 
               // Пример: перейти назад с результатом (если нужно)
@@ -68,7 +65,9 @@ export default function BarcodeScannerPage() {
     if (lastResult) {
       // Пример: перейти на страницу добавления продукта с штрих-кодом
       // navigate(`/add-product?barcode=${lastResult}`);
-      alert(`Штрих-код: ${lastResult}`);
+      webApp.openLink(
+        `https://world.openfoodfacts.org/api/v0/product/${lastResult}.json`
+      );
     }
   };
 
