@@ -26,7 +26,10 @@ function Test() {
       <h1>Привет, {userData}!</h1>
       <h1>{platformData}</h1>
       <button
-        onClick={() => webApp.HapticFeedback.impactOccurred("heavy", false)}
+        onClick={() => {
+          webApp.HapticFeedback.impactOccurred("heavy", false);
+          webApp.openCodeReader();
+        }}
       >
         Закрыть
       </button>
