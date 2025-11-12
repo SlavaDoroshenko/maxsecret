@@ -3,6 +3,7 @@ import DiaryIcon from "../assets/diary.svg";
 import ProfileIcon from "../assets/profile.svg";
 import ReceptsIcon from "../assets/recepts.svg";
 import StatisticIcon from "../assets/statistic.svg";
+import { Navigate } from "react-router-dom";
 
 const tabs = [
   { id: "diary", label: "Дневник", Icon: DiaryIcon },
@@ -24,7 +25,12 @@ export default function TabBar() {
           return (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => {
+                setActiveTab(tab.id);
+                if (tab.id == "profile") {
+                  <Navigate to={"test"} />;
+                }
+              }}
               className={`flex flex-col items-center text-xs ${textColor}`}
             >
               <img src={tab.Icon} alt={tab.label} className="w-6 h-6" />

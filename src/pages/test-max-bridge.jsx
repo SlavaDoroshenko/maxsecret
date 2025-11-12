@@ -13,6 +13,8 @@ function Test() {
       // Сохраняем ссылку для удобства
       setWebApp(window.WebApp);
 
+      setUserData(webApp.initDataUnsafe);
+
       // Данные пользователя (небезопасные, только для UI!)
       //   window.WebApp.openLink(
       //     "https://www.figma.com/design/HXV56zy3MEmVOfG2jakrdS/Untitled?node-id=0-1&p=f&t=DmX7rmNaLFvTYrSd-0"
