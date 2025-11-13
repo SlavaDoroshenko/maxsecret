@@ -11,7 +11,7 @@ createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <TabProvider>
       <MaxBridgeProvider>
-        <MaxUI colorScheme="dark" platform="ios">
+        <MaxUI>
           <App />
         </MaxUI>
       </MaxBridgeProvider>
