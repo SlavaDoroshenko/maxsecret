@@ -7,6 +7,7 @@ import {
   Typography,
   Button,
   CellList,
+  CellAction,
 } from "@maxhub/max-ui";
 import TabBar from "../components/tabs";
 import CircularProgress from "../components/circular-progress";
@@ -14,11 +15,14 @@ import { currentNorm, dailyNorm, dailyRemain } from "../mocks/variables";
 import ArrowRight from "../assets/arrow-right.svg?react";
 import NormStatic from "../components/norm-static";
 import MacronutrientBar from "../components/progress-bars";
+import Plus from "../assets/plus.svg?react";
+import BreakFastIcon from "../assets/breakfast.svg?react";
+import MealItem from "../components/meal-item";
 
 const Main = () => (
-  <Panel mode="secondary" className="h-dvh flex flex-col">
-    <Grid gap={12} cols={1}>
-      <div className="h-dvh bg-inherit">
+  <Panel mode="secondary" className="flex flex-col">
+    <div className="min-h-dvh bg-inherit pb-[70px]">
+      <Grid gap={12} cols={1}>
         <CellList
           mode="full-width"
           filled={true}
@@ -74,10 +78,26 @@ const Main = () => (
             </Flex>
           </Flex>
         </CellList>
-      </div>
-    </Grid>
+      </Grid>
 
-    <TabBar />
+      <div className="flex flex-col p-2 pb-5 ">
+        <Typography.Headline className="pl-2 pt-2 mb-3">
+          Приемы пищи
+        </Typography.Headline>
+
+        <MealItem id={1} label={"Завтрак"} current={144} max={350} />
+        <MealItem id={1} label={"Завтрак"} current={144} max={350} />
+        <MealItem id={1} label={"Завтрак"} current={144} max={350} />
+        <MealItem id={1} label={"Завтрак"} current={144} max={350} />
+        <MealItem id={1} label={"Завтрак"} current={144} max={350} />
+        <MealItem id={1} label={"Завтрак"} current={144} max={350} />
+        <MealItem id={1} label={"Завтрак"} current={144} max={350} />
+        <MealItem id={1} label={"Завтрак"} current={144} max={350} />
+        <MealItem id={1} label={"Завтрак"} current={144} max={350} />
+      </div>
+
+      <TabBar />
+    </div>
   </Panel>
 );
 
