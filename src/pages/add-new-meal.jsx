@@ -18,8 +18,12 @@ import MacronutrientBar from "../components/progress-bars";
 import Plus from "../assets/plus.svg?react";
 import BreakFastIcon from "../assets/breakfast.svg?react";
 import MealItem from "../components/meal-item";
+import { useMaxBridge } from "../contexts/maxBridgeContext";
 
 const AddNewMeal = ({ meal, date }) => {
+  const webApp = useMaxBridge();
+
+  webApp.BackButton.show();
   return (
     <Panel mode="secondary" className="flex flex-col">
       <div className="min-h-dvh bg-inherit pb-[70px]">
