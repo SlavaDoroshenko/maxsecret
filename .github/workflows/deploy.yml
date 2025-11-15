@@ -65,20 +65,23 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Копируем файлы на сервер
-            mkdir -p /home/${{ secrets.SERVER_USER }}/app
-            echo "${{ secrets.ENV_FILE }}" > /home/${{ secrets.SERVER_USER }}/app/.env
-            cp docker-compose.yml /home/${{ secrets.SERVER_USER }}/app/
-
-            cd /home/${{ secrets.SERVER_USER }}/app
-
-            # Pull новые образы
-            docker-compose pull
-
-            # Останавливаем старые контейнеры
-            docker-compose down
-
-            # Запускаем новые контейнеры
-            docker-compose -f .docker-compose.yml up -d
-
+            echo "Stopping old container..."
+            docker stop web || true
+            docker rm web || true
+            docker stop backend || true
+            docker rm backend || true
+            docker stop bot || true
+            docker rm bot || true
+            echo "Removing old image..."
+            docker rmi ghcr.io/${{ env.IMAGE_WEB }}:latest || true
+            docker rmi ghcr.io/${{ env.IMAGE_BACKEND }}:latest || true
+            docker rmi ghcr.io/${{ env.IMAGE_BOT }}:latest || true
+            echo "Pulling new image..."
+            docker pull ghcr.io/${{ env.IMAGE_WEB }}:latest
+            docker pull ghcr.io/${{ env.IMAGE_BACKEND }}:latest
+            docker pull ghcr.io/${{ env.IMAGE_BOT }}:latest
+            echo "Running new container..."
+            docker run -d --name web --restart unless-stopped ghcr.io/${{ env.IMAGE_WEB }}:latest
+            docker run -d --name web --restart unless-stopped ghcr.io/${{ env.IMAGE_BACKEND }}:latest
+            docker run -d --name web --restart unless-stopped ghcr.io/${{ env.IMAGE_BOT }}:latest
             echo "Deployment complete!"
