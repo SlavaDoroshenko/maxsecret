@@ -1,3 +1,93 @@
+# name: CI/CD for Multi-service Docker Compose
+
+# on:
+#   push:
+#     branches: ["main"]
+
+# env:
+#   IMAGE_WEB: slavadoroshenko/maxsecret-web
+#   IMAGE_BACKEND: slavadoroshenko/maxsecret-backend
+#   IMAGE_BOT: slavadoroshenko/maxsecret-bot
+#   IMAGE_DB: slavadoroshenko/maxsecret-db
+#   IMAGE_MIGRATE: slavadoroshenko/maxsecret-migrate
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     permissions:
+#       contents: read
+#       packages: write
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Log in to GHCR
+#         uses: docker/login-action@v3
+#         with:
+#           registry: ghcr.io
+#           username: ${{ github.actor }}
+#           password: ${{ secrets.GITHUB_TOKEN }}
+
+#       - name: Build and push web image
+#         uses: docker/build-push-action@v5
+#         with:
+#           context: .
+#           file: ./Dockerfile
+#           push: true
+#           tags: |
+#             ghcr.io/${{ env.IMAGE_WEB }}:latest
+#             ghcr.io/${{ env.IMAGE_WEB }}:${{ github.sha }}
+
+#       - name: Build and push backend image
+#         uses: docker/build-push-action@v5
+#         with:
+#           context: ./backend
+#           file: ./backend/Dockerfile
+#           push: true
+#           tags: |
+#             ghcr.io/${{ env.IMAGE_BACKEND }}:latest
+#             ghcr.io/${{ env.IMAGE_BACKEND }}:${{ github.sha }}
+
+#       - name: Build and push bot image
+#         uses: docker/build-push-action@v5
+#         with:
+#           context: ./bot
+#           file: ./bot/Dockerfile
+#           push: true
+#           tags: |
+#             ghcr.io/${{ env.IMAGE_BOT }}:latest
+#             ghcr.io/${{ env.IMAGE_BOT }}:${{ github.sha }}
+
+#       - name: Deploy to server
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ secrets.SERVER_HOST }}
+#           username: ${{ secrets.SERVER_USER }}
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           script: |
+#             echo "Stopping old container..."
+#             docker stop web || true
+#             docker rm web || true
+#             docker stop backend || true
+#             docker rm backend || true
+#             docker stop bot || true
+#             docker rm bot || true
+#             echo "Removing old image..."
+#             docker rmi ghcr.io/${{ env.IMAGE_WEB }}:latest || true
+#             docker rmi ghcr.io/${{ env.IMAGE_BACKEND }}:latest || true
+#             docker rmi ghcr.io/${{ env.IMAGE_BOT }}:latest || true
+#             echo "Pulling new image..."
+#             docker pull ghcr.io/${{ env.IMAGE_WEB }}:latest
+#             docker pull ghcr.io/${{ env.IMAGE_BACKEND }}:latest
+#             docker pull ghcr.io/${{ env.IMAGE_BOT }}:latest
+#             echo "Running new container..."
+#             docker run -d --name web --restart unless-stopped ghcr.io/${{ env.IMAGE_WEB }}:latest
+#             docker run -d --name backend --restart unless-stopped ghcr.io/${{ env.IMAGE_BACKEND }}:latest
+#             docker run -d --name bot --restart unless-stopped ghcr.io/${{ env.IMAGE_BOT }}:latest
+#             echo "Deployment complete!"
+
 name: CI/CD for Multi-service Docker Compose
 
 on:
@@ -65,23 +155,26 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "Stopping old container..."
-            docker stop web || true
-            docker rm web || true
-            docker stop backend || true
-            docker rm backend || true
-            docker stop bot || true
-            docker rm bot || true
-            echo "Removing old image..."
-            docker rmi ghcr.io/${{ env.IMAGE_WEB }}:latest || true
-            docker rmi ghcr.io/${{ env.IMAGE_BACKEND }}:latest || true
-            docker rmi ghcr.io/${{ env.IMAGE_BOT }}:latest || true
-            echo "Pulling new image..."
-            docker pull ghcr.io/${{ env.IMAGE_WEB }}:latest
-            docker pull ghcr.io/${{ env.IMAGE_BACKEND }}:latest
-            docker pull ghcr.io/${{ env.IMAGE_BOT }}:latest
-            echo "Running new container..."
-            docker run -d --name web --restart unless-stopped ghcr.io/${{ env.IMAGE_WEB }}:latest
-            docker run -d --name backend --restart unless-stopped ghcr.io/${{ env.IMAGE_BACKEND }}:latest
-            docker run -d --name bot --restart unless-stopped ghcr.io/${{ env.IMAGE_BOT }}:latest
+            # 1. Создаём папку приложения
+            APP_DIR="/home/${{ secrets.SERVER_USER }}/app"
+            mkdir -p "$APP_DIR"
+            cd "$APP_DIR"
+
+            # 2. Клонируем или обновляем репозиторий
+            if [ -f "docker-compose.yml" ]; then
+              git pull
+            else
+              git clone https://github.com/SlavaDoroshenko/MaxSecret.git .
+            fi
+
+            # 3. Создаём .env из секрета
+            cat > .env << 'EOF'
+            ${{ secrets.ENV_FILE }}
+            EOF
+
+            # 4. Запускаем стек
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d --remove-orphans
+
             echo "Deployment complete!"
