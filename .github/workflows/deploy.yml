@@ -161,7 +161,7 @@ jobs:
             cd "$APP_DIR"
 
             # 2. Клонируем или обновляем репозиторий
-            if [ -f "docker-compose.yml" ]; then
+            if [ -f ".docker-compose.yml" ]; then
               git pull
             else
               git clone https://github.com/SlavaDoroshenko/MaxSecret.git .
