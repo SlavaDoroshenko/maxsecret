@@ -82,6 +82,6 @@ jobs:
             docker pull ghcr.io/${{ env.IMAGE_BOT }}:latest
             echo "Running new container..."
             docker run -d --name web --restart unless-stopped ghcr.io/${{ env.IMAGE_WEB }}:latest
-            docker run -d --name web --restart unless-stopped ghcr.io/${{ env.IMAGE_BACKEND }}:latest
-            docker run -d --name web --restart unless-stopped ghcr.io/${{ env.IMAGE_BOT }}:latest
+            docker run -d --name backend --restart unless-stopped ghcr.io/${{ env.IMAGE_BACKEND }}:latest
+            docker run -d --name bot --restart unless-stopped ghcr.io/${{ env.IMAGE_BOT }}:latest
             echo "Deployment complete!"
