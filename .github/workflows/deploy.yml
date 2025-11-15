@@ -126,7 +126,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # 1. Создаём папку приложения
-            APP_DIR="/home/${{ secrets.SERVER_USER }}/app"
+            APP_DIR="/home/${{ secrets.SERVER_USER }}/app1"
             mkdir -p "$APP_DIR"
             cd "$APP_DIR"
 
@@ -137,7 +137,7 @@ jobs:
               git pull origin main
             else
               echo "Cloning repository..."
-              git clone https://github.com/SlavaDoroshenko/MaxSecret.git .
+              git clone https://github.com/SlavaDoroshenko/maxsecret.git .
             fi
 
             # 3. Создаём .env из секрета
