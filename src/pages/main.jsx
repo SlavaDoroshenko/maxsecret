@@ -31,7 +31,7 @@ const Main = () => {
           <CellList
             mode="full-width"
             filled={true}
-            className={`fixed top-0 left-0 right-0 z-10 rounded-b-4xl overflow-hidden ${
+            className={`fixed top-0 left-0 right-0 z-10 rounded-b-4xl overflow-hidden transition-shadow duration-200 ${
               showShadow ? "shadow-xl" : ""
             }`}
           >
