@@ -1,0 +1,6 @@
+CREATE TABLE water(
+    id SERIAL PRIMARY KEY,
+    count_ml INTEGER NOT NULL DEFAULT 0,
+    user_id INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
