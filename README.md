@@ -11,7 +11,7 @@ cd maxsecret
 
 Создайте в корне проекта .env файл по образцу как .env.example
 
-## 3. Запустите docker
+## 3. Запустить docker
 
 ```
 docker-compose up --build
