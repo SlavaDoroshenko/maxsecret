@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { BrowserMultiFormatReader } from "@zxing/browser";
-import { NotFoundException } from "@zxing/library";
+import { BrowserBarcodeReader, NotFoundException } from "@zxing/library";
 import { useNavigate } from "react-router-dom";
 import { useMaxBridge } from "../contexts/maxBridgeContext";
 
@@ -15,7 +14,7 @@ export default function BarcodeScannerPage() {
   useEffect(() => {
     if (!isScanning) return;
 
-    const codeReader = new BrowserMultiFormatReader();
+    const codeReader = new BrowserBarcodeReader();
 
     const startScanning = async () => {
       try {
