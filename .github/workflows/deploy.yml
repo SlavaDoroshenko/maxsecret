@@ -1,11 +1,13 @@
-name: CI/CD for React + Vite
+name: CI/CD for Multi-service Docker Compose
 
 on:
   push:
     branches: ["main"]
 
 env:
-  IMAGE_NAME: slavadoroshenko/maxsecret
+  IMAGE_WEB: slavadoroshenko/maxsecret-web
+  IMAGE_BACKEND: slavadoroshenko/maxsecret-backend
+  IMAGE_BOT: slavadoroshenko/maxsecret-bot
 
 jobs:
   deploy:
@@ -26,14 +28,35 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image
+      - name: Build and push web image
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: ./Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ env.IMAGE_NAME }}:latest
-            ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+            ghcr.io/${{ env.IMAGE_WEB }}:latest
+            ghcr.io/${{ env.IMAGE_WEB }}:${{ github.sha }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_BACKEND }}:latest
+            ghcr.io/${{ env.IMAGE_BACKEND }}:${{ github.sha }}
+
+      - name: Build and push bot image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./bot
+          file: ./bot/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ env.IMAGE_BOT }}:latest
+            ghcr.io/${{ env.IMAGE_BOT }}:${{ github.sha }}
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.3
@@ -42,13 +65,20 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            echo "Stopping old container..."
-            docker stop web || true
-            docker rm web || true
-            echo "Removing old image..."
-            docker rmi ghcr.io/${{ env.IMAGE_NAME }}:latest || true
-            echo "Pulling new image..."
-            docker pull ghcr.io/${{ env.IMAGE_NAME }}:latest
-            echo "Running new container..."
-            docker run -d --name web -p 8080:80 --restart unless-stopped ghcr.io/${{ env.IMAGE_NAME }}:latest
+            # Копируем файлы на сервер
+            mkdir -p /home/${{ secrets.SERVER_USER }}/app
+            echo "${{ secrets.ENV_FILE }}" > /home/${{ secrets.SERVER_USER }}/app/.env
+            cp docker-compose.yml /home/${{ secrets.SERVER_USER }}/app/
+
+            cd /home/${{ secrets.SERVER_USER }}/app
+
+            # Pull новые образы
+            docker-compose pull
+
+            # Останавливаем старые контейнеры
+            docker-compose down
+
+            # Запускаем новые контейнеры
+            docker-compose up -d
+
             echo "Deployment complete!"
