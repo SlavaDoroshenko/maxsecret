@@ -1,49 +1,58 @@
 import { useEffect, useRef, useState } from "react";
-
-import { BrowserBarcodeReader, NotFoundException } from "@zxing/library";
+import {
+  BrowserMultiFormatOneDReader,
+  NotFoundException,
+} from "@zxing/library";
 import { useNavigate } from "react-router-dom";
 import { useMaxBridge } from "../contexts/maxBridgeContext";
 
 export default function BarcodeScannerPage() {
-  const videoRef = useRef(null);
+  const videoRef = useRef < HTMLVideoElement > null;
   const [isScanning, setIsScanning] = useState(true);
-  const [error, setError] = useState(null);
-  const [lastResult, setLastResult] = useState(null);
+  const [error, setError] = (useState < string) | (null > null);
+  const [lastResult, setLastResult] = (useState < string) | (null > null);
   const navigate = useNavigate();
   const webApp = useMaxBridge();
 
   useEffect(() => {
     if (!isScanning) return;
 
-    const codeReader = new BrowserBarcodeReader(5);
+    const codeReader = new BrowserMultiFormatOneDReader();
 
     const startScanning = async () => {
       try {
         await codeReader.decodeFromVideoDevice(
-          undefined,
+          undefined, // use default camera
           videoRef.current,
           (result, err) => {
             if (result) {
               const barcode = result.getText();
               setLastResult(barcode);
-              setIsScanning(true); // можно закомментировать, если нужно автоматически остановить
+              codeReader.reset(); // Остановить камеру и поток
+              setIsScanning(false);
             } else if (err && !(err instanceof NotFoundException)) {
               setError("Ошибка при сканировании: " + err.message);
             }
+            // NotFoundException игнорируется — это нормально при поиске
           }
         );
       } catch (err) {
         if (err.name === "NotAllowedError") {
           setError(
-            "Доступ к камере запрещён. Пожалуйста, разрешите доступ в настройках браузера."
+            "Доступ к камере запрещён. Разрешите в настройках браузера."
           );
         } else {
-          setError("Не удалось запустить камеру: " + err.message);
+          setError("Не удалось запустить камеру: " + (err.message || err));
         }
       }
     };
 
     startScanning();
+
+    // Cleanup: остановить сканирование при размонтировании или перезапуске
+    return () => {
+      codeReader.reset();
+    };
   }, [isScanning]);
 
   const handleUseResult = () => {
@@ -90,9 +99,11 @@ export default function BarcodeScannerPage() {
               ref={videoRef}
               className="absolute top-0 left-0 w-full h-full object-cover"
               autoPlay
+              muted
               playsInline
             />
-            <div className="absolute top-1/2 left-1/2 w-60 h-40 -translate-x-1/2 -translate-y-1/2 border-2 border-blue-500 rounded-md box-border pointer-events-none">
+            <div className="absolute top-1/2 left-1/2 w-60 h-40 -translate-x-1/2 -translate-y-1/2 border-2 border-blue-500 rounded-md pointer-events-none">
+              {/* Угловые маркеры */}
               <div className="absolute -top-1 -left-1 w-5 h-5 border-t-4 border-l-4 border-blue-500"></div>
               <div className="absolute -top-1 -right-1 w-5 h-5 border-t-4 border-r-4 border-blue-500"></div>
               <div className="absolute -bottom-1 -left-1 w-5 h-5 border-b-4 border-l-4 border-blue-500"></div>
